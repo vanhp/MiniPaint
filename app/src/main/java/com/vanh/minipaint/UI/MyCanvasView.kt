@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import androidx.core.content.res.ResourcesCompat
 import com.vanh.minipaint.R
 
@@ -21,6 +22,10 @@ class MyCanvasView (context:Context): View(context){
     private var path = Path() //drawing path
     var motionTouchEventX = 0f
     var motionTouchEventY = 0f
+    private var currentX = 0f
+    private var currentY = 0f
+    private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
+
 
     // Set up the paint with which to draw.
     private val paint = Paint().apply {
@@ -70,11 +75,24 @@ class MyCanvasView (context:Context): View(context){
         TODO("Not yet implemented")
     }
 
-    private fun touchMove() {
-        TODO("Not yet implemented")
-    }
-
     private fun touchStart() {
-        TODO("Not yet implemented")
+       path.reset()
+       path.moveTo(motionTouchEventX, motionTouchEventY)
+       currentX = motionTouchEventX
+       currentY = motionTouchEventY
     }
+    private fun touchMove() {
+       val dx = Math.abs(motionTouchEventX - currentX)
+       val dy = Math.abs(motionTouchEventY - currentY)
+       if (dx >= touchTolerance || dy >= touchTolerance) {
+           // QuadTo() adds a quadratic bezier from the last point,
+           // approaching control point (x1,y1), and ending at (x2,y2).
+           path.quadTo(currentX, currentY, (motionTouchEventX + currentX) / 2, (motionTouchEventY + currentY) / 2)
+           currentX = motionTouchEventX
+           currentY = motionTouchEventY
+           // Draw the path in the extra bitmap to cache it.
+           extraCanvas.drawPath(path, paint)
+       }
+       invalidate()
+}
 }
