@@ -21,6 +21,8 @@ class MyCanvasView (context:Context): View(context){
     var motionTouchEventY = 0f
     private var currentX = 0f
     private var currentY = 0f
+
+    // draw only when finger move is in the range to improve performance
     private val touchTolerance = ViewConfiguration.get(context).scaledTouchSlop
     private lateinit var frame: Rect
     // Path representing the drawing so far
@@ -62,7 +64,7 @@ class MyCanvasView (context:Context): View(context){
         super.onDraw(canvas)
 
         canvas.drawBitmap(extraBitmap,0f,0f,null)
-//        canvas.drawRect(frame,paint)
+        canvas.drawRect(frame,paint)
 //        canvas.drawPath(drawing,paint)
 //        canvas.drawPath(curPath,paint)
 //        canvas.drawRect(frame,paint)
